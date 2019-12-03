@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Word;
 using DocKutter.Common;
 using DocKutter.Common.Utils;
 
 namespace DocKutter.DocHandlers
 {
-    public class ExcelHandler : IDocHandler
+    public class WordHandler : IDocHandler
     {
         public string ConvertToPDF(string fileName, string outDir, bool createDir = false)
         {
@@ -25,29 +25,29 @@ namespace DocKutter.DocHandlers
                         throw new DirectoryNotFoundException(String.Format("Output directory not found/be created. [path={0}]", outDir));
                     }
                 }
-                Application excel = new Application();
-                excel.Visible = false;
+                Application word = new Application();
+                word.Visible = false;
                 try
                 {
-                    Workbook workbook = excel.Workbooks.Open(inFile.FullName);
+                    Document doc = word.Documents.Open(inFile.FullName);
                     try
                     {
                         string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
                         string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
                         LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
 
-                        workbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, outpath, XlFixedFormatQuality.xlQualityStandard, true, true);
+                        doc.ExportAsFixedFormat(outpath, WdExportFormat.wdExportFormatPDF);
 
                         return outpath;
                     }
                     finally
                     {
-                        workbook.Close();
+                        doc.Close();
                     }
                 }
                 finally
                 {
-                    excel.Quit();
+                    word.Quit();
                 }
             } 
             catch(Exception ex)
