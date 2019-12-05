@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using Microsoft.Office.Interop.Word;
+using Microsoft.Office.Interop.Outlook;
 using DocKutter.Common;
 using DocKutter.Common.Utils;
 
 namespace DocKutter.DocHandlers
 {
-    public class WordHandler : IDocHandler
+    public class OutlooklHandler : IDocHandler
     {
         public string ConvertToPDF(string fileName, string outDir, bool createDir = false)
         {
@@ -26,36 +26,44 @@ namespace DocKutter.DocHandlers
                         throw new DirectoryNotFoundException(String.Format("Output directory not found/be created. [path={0}]", outDir));
                     }
                 }
-                Application word = new Application();
-                word.Visible = false;
+                Application outlook = new Application();
                 try
                 {
-                    Document doc = word.Documents.Open(inFile.FullName);
-                    try
+
+                    string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
+                    string ext = Path.GetExtension(inFile.FullName);
+                    string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
+                    LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
+                    if (ext.ToLower().CompareTo("msg") == 0)
                     {
-                        string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
-                        string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
-                        LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
-
-                        doc.ExportAsFixedFormat(outpath, WdExportFormat.wdExportFormatPDF);
-
-                        return outpath;
+                        convertMsg(outlook, inFile.FullName, outpath);
                     }
-                    finally
+                    else
                     {
-                        doc.Close();
+                        convertEml(outlook, inFile.FullName, outpath);
                     }
                 }
                 finally
                 {
-                    word.Quit();
+                    outlook.Quit();
                 }
-            } 
-            catch(Exception ex)
+            }
+            catch (System.Exception ex)
             {
                 LogUtils.Error(ex);
                 throw ex;
             }
+        }
+
+        private void convertMsg(Application outlook, string fileName, string outfile)
+        {
+            MailItem mailItem = (MailItem)outlook.CreateItemFromTemplate(fileName);
+            mailItem.SaveAs(outfile, OlSaveAsType.olHTML);
+        }
+
+        private void convertEml(Application outlook, string fileName, string outfile)
+        {
+
         }
 
         public Dictionary<string, string> ConvertToPDF(List<string> files, string outDir, bool createDir = false)

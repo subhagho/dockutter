@@ -9,5 +9,7 @@ namespace DocKutter.DocHandlers
     public interface IDocHandler
     {
         string ConvertToPDF(string fileName, string outDir, bool createDir = false);
+
+        Dictionary<string, string> ConvertToPDF(List<string> files, string outDir, bool createDir = false);
     }
 }
