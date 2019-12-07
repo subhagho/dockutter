@@ -27,7 +27,7 @@ namespace DocKutter.DocHandlers
                     }
                 }
                 Application power = new Application();
-               
+                
                 try
                 {
                     Presentation pp = power.Presentations.Open(inFile.FullName);
@@ -50,8 +50,8 @@ namespace DocKutter.DocHandlers
                 {
                     power.Quit();
                 }
-            } 
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 LogUtils.Error(ex);
                 throw ex;

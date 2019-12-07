@@ -42,6 +42,7 @@ namespace DocKutter.DocHandlers
                     {
                         convertEml(outlook, inFile.FullName, outpath);
                     }
+                    return outpath;
                 }
                 finally
                 {
