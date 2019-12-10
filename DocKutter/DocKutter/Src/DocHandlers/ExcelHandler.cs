@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using Microsoft.Office.Interop.Excel;
 using DocKutter.Common;
 using DocKutter.Common.Utils;
@@ -55,6 +56,17 @@ namespace DocKutter.DocHandlers
                 LogUtils.Error(ex);
                 throw ex;
             }
+        }
+
+        public Dictionary<string, string> ConvertToPDF(List<string> files, string outDir, bool createDir = false)
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            foreach(string file in files)
+            {
+                string output = ConvertToPDF(file, outDir, createDir);
+                result.Add(file, output);
+            }
+            return result;
         }
     }
 }

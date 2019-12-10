@@ -1,0 +1,14 @@
+.qs-listings #asset-middle-b{display:flex;margin-top:10px;margin-bottom:10px}.qs-listings #asset-middle-b .inner-content
+a{font-family:Arial,Helvetica Neue,Helvetica,sans-serif;font-size:23.93px;color:#000;font-style:normal;text-align:left;line-height:27.92px;letter-spacing:0 em;font-weight:bold}.qs-listings #asset-middle-b #read-more-btn{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background-color:#2b9fea;font-size:16px;color:#fff;font-style:normal;text-align:center;line-height:21.66px;margin-bottom:0px;padding:10%;font-weight:bold;border:none;float:left;text-decoration:none}.qs-listings #asset-middle-b
+.border{background-color:2b9fea;height:6px}.articleMiddlePosition_B
+.section{clear:both;padding:0px;margin:0px;border-top:#2b9fea solid 6px !important;border-bottom:#2b9fea solid 6px !important}.qs-listings #asset-middle-b .asset-col{display:block;float:left}.qs-listings #asset-middle-b .asset-col:first-child{margin-left:2%}.qs-listings #asset-middle-b .group:before,
+.qs-listings #asset-middle-b .group:after{content:"";display:table}.qs-listings #asset-middle-b .group:after{clear:both}.qs-listings #asset-middle-b
+.group{width:100%}.qs-listings #asset-middle-b
+.span_3_of_3{width:100%}.qs-listings #asset-middle-b
+.span_2_of_3{width:70%;margin-top:2%;margin-bottom:2%;text-align:left}.qs-listings #asset-middle-b
+.span_1_of_3{width:24%;float:left;position:relative;height:100%;margin-left:1%;margin-top:1%}.qs-listings #asset-middle-b #btn-clip-wrapper{float:left;width:100%;position:relative;top:50%;bottom:50%;transform:translate(0%,-52%)}.qs-listings #asset-middle-b #clip-div{float:right}.qs-listings #asset-middle-b #read-more-btn-div{float:left;display:inline-block;width:75%}@media only screen and (max-width: 300px){.qs-listings #asset-middle-b .asset-col{margin:1% 0 1% 0%}.qs-listings #asset-middle-b .span_3_of_3, .qs-listings #asset-middle-b .span_2_of_3,.qs-listings #asset-middle-b
+.span_1_of_3{width:100%}.qs-listings #asset-middle-b #clip-div{clear:both}}.qs-listings #asset-middle-b
+.btn_asset{display:inline-block;font-weight:400;line-height:1.25;text-align:center;white-space:nowrap;vertical-align:middle;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;border:1px
+solid transparent;padding: .5rem 1rem;font-size:1rem;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;transition:all .2s ease-in-out}.articleMiddlePosition_test_B
+.section{clear:both;padding:0px;margin:0px;border-top:#2b9fea solid 6px !important}.qs-listings
+#bottomline{border-bottom:#2b9fea solid 6px !important}
