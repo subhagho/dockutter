@@ -17,4 +17,8 @@
     <ProjectReference Include="..\DocKutter\DocKutter.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\Word\" />
+  </ItemGroup>
+
 </Project>
