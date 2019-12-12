@@ -8,8 +8,14 @@ namespace DocKutter.DocHandlers
 {
     public interface IDocHandler
     {
+        void Init();
+
         string ConvertToPDF(string fileName, string outDir, bool createDir = false);
 
         Dictionary<string, string> ConvertToPDF(List<string> files, string outDir, bool createDir = false);
+
+        void Close();
+
+        void WithDocHandlerFactory(IDocHandlerFactory factory);
     }
 }

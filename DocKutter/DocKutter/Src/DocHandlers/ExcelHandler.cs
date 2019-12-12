@@ -9,9 +9,22 @@ namespace DocKutter.DocHandlers
 {
     public class ExcelHandler : IDocHandler
     {
+        private Application excel = null;
+
+        public void Close()
+        {
+            if (excel != null)
+            {
+                excel.Quit();
+                excel = null;
+            }
+        }
+
         public string ConvertToPDF(string fileName, string outDir, bool createDir = false)
         {
+            Preconditions.CheckArgument(excel);
             Preconditions.CheckArgument(fileName);
+
             try
             {
                 FileInfo inFile = new FileInfo(fileName);
@@ -26,32 +39,25 @@ namespace DocKutter.DocHandlers
                         throw new DirectoryNotFoundException(String.Format("Output directory not found/be created. [path={0}]", outDir));
                     }
                 }
-                Application excel = new Application();
-                excel.Visible = false;
+
+                Workbook workbook = excel.Workbooks.Open(inFile.FullName);
                 try
                 {
-                    Workbook workbook = excel.Workbooks.Open(inFile.FullName);
-                    try
-                    {
-                        string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
-                        string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
-                        LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
+                    string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
+                    string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
+                    LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
 
-                        workbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, outpath, XlFixedFormatQuality.xlQualityStandard, true, true);
+                    workbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, outpath, XlFixedFormatQuality.xlQualityStandard, true, true);
 
-                        return outpath;
-                    }
-                    finally
-                    {
-                        workbook.Close();
-                    }
+                    return outpath;
                 }
                 finally
                 {
-                    excel.Quit();
+                    workbook.Close();
                 }
-            } 
-            catch(Exception ex)
+
+            }
+            catch (Exception ex)
             {
                 LogUtils.Error(ex);
                 throw ex;
@@ -61,12 +67,21 @@ namespace DocKutter.DocHandlers
         public Dictionary<string, string> ConvertToPDF(List<string> files, string outDir, bool createDir = false)
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach(string file in files)
+            foreach (string file in files)
             {
                 string output = ConvertToPDF(file, outDir, createDir);
                 result.Add(file, output);
             }
             return result;
+        }
+
+        public void Init()
+        {
+            if (excel == null)
+            {
+                excel = new Application();
+                excel.Visible = false;
+            }
         }
     }
 }

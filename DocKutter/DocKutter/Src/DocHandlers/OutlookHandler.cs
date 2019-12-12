@@ -9,6 +9,8 @@ namespace DocKutter.DocHandlers
 {
     public class OutlooklHandler : IDocHandler
     {
+        private WordHandler wordHandler = new WordHandler();
+
         public string ConvertToPDF(string fileName, string outDir, bool createDir = false)
         {
             Preconditions.CheckArgument(fileName);

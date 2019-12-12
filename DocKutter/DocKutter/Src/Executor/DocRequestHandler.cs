@@ -27,7 +27,7 @@ namespace DocKutter.Executor
 
     public delegate void DocResponseHandler(ProcessResponse response);
 
-    public class DocRequestHandler
+    public class DocRequestHandler : IDocHandlerFactory
     {
         public const string DOC_HANDLER_WORD = "WORD";
         public const string DOC_HANDLER_EXCEL = "EXCEL";
@@ -36,13 +36,46 @@ namespace DocKutter.Executor
 
         private Dictionary<string, IDocHandler> handlers;
 
+        public IDocHandler GetDocHandler(string name)
+        {
+            if (handlers.ContainsKey(name))
+            {
+                return handlers[name];
+            }
+            return null;
+        }
+
+        public void Close()
+        {
+            if (handlers != null && handlers.Count > 0)
+            {
+                foreach(IDocHandler handler in handlers.Values)
+                {
+                    handler.Close();
+                }
+                handlers.Clear();
+            }
+        }
+
         public void Init()
         {
             handlers = new Dictionary<string, IDocHandler>();
+
             handlers[DOC_HANDLER_EMAIL] = new OutlooklHandler();
+            handlers[DOC_HANDLER_EMAIL].Init();
+            handlers[DOC_HANDLER_EMAIL].WithDocHandlerFactory(this);
+
             handlers[DOC_HANDLER_EXCEL] = new ExcelHandler();
+            handlers[DOC_HANDLER_EXCEL].Init();
+            handlers[DOC_HANDLER_EXCEL].WithDocHandlerFactory(this);
+
             handlers[DOC_HANDLER_POWERPOINT] = new PowerPointHandler();
+            handlers[DOC_HANDLER_POWERPOINT].Init();
+            handlers[DOC_HANDLER_POWERPOINT].WithDocHandlerFactory(this);
+
             handlers[DOC_HANDLER_WORD] = new WordHandler();
+            handlers[DOC_HANDLER_WORD].Init();
+            handlers[DOC_HANDLER_WORD].WithDocHandlerFactory(this);
         }
 
         public ManualResetEvent Run(string type, string sourceDoc, string outDir, DocResponseHandler callback)

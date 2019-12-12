@@ -9,8 +9,20 @@ namespace DocKutter.DocHandlers
 {
     public class WordHandler : IDocHandler
     {
+        private Application word = null;
+
+        public void Close()
+        {
+            if (word != null)
+            {
+                word.Quit();
+                word = null;
+            }
+        }
+
         public string ConvertToPDF(string fileName, string outDir, bool createDir = false)
         {
+            Preconditions.CheckArgument(word);
             Preconditions.CheckArgument(fileName);
             try
             {
@@ -26,32 +38,24 @@ namespace DocKutter.DocHandlers
                         throw new DirectoryNotFoundException(String.Format("Output directory not found/be created. [path={0}]", outDir));
                     }
                 }
-                Application word = new Application();
-                word.Visible = false;
+
+                Document doc = word.Documents.Open(inFile.FullName);
                 try
                 {
-                    Document doc = word.Documents.Open(inFile.FullName);
-                    try
-                    {
-                        string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
-                        string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
-                        LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
+                    string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
+                    string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
+                    LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
 
-                        doc.ExportAsFixedFormat(outpath, WdExportFormat.wdExportFormatPDF);
+                    doc.ExportAsFixedFormat(outpath, WdExportFormat.wdExportFormatPDF);
 
-                        return outpath;
-                    }
-                    finally
-                    {
-                        doc.Close();
-                    }
+                    return outpath;
                 }
                 finally
                 {
-                    word.Quit();
+                    doc.Close();
                 }
-            } 
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 LogUtils.Error(ex);
                 throw ex;
@@ -67,6 +71,15 @@ namespace DocKutter.DocHandlers
                 result.Add(file, output);
             }
             return result;
+        }
+
+        public void Init()
+        {
+            if (word == null)
+            {
+                word = new Application();
+                word.Visible = false;
+            }
         }
     }
 }
