@@ -49,6 +49,7 @@ namespace DocKutter.DocHandlers
             if (response.Error != null)
             {
                 LogUtils.Error(response.Error);
+                throw response.Error;
             }
             else
             {

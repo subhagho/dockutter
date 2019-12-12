@@ -47,7 +47,7 @@ namespace DocKutter.DocHandlers
                     }
                     else
                     {
-                        outpath = convertMsg(outlook, inFile.FullName, outpath, outDir);
+                        outpath = convertEml(inFile.FullName, outDir);
                         LogUtils.Debug(String.Format("Generated PDF output. [path={0}]", outpath));
                     }
                     return outpath;
@@ -71,6 +71,16 @@ namespace DocKutter.DocHandlers
                 throw new System.Exception("HTML Doc Handler not found.");
             }
             return htmlDocHandler.ConvertToPDF(htmlFile, outDir);
+        }
+
+        private string convertEml(string fileName, string outDir)
+        {
+            WordHandler wordDocHandler = (WordHandler)docHandlerFactory.GetDocHandler(DocConstants.DOC_HANDLER_WORD);
+            if (wordDocHandler == null)
+            {
+                throw new System.Exception("Word Doc Handler not found.");
+            }
+            return wordDocHandler.ConvertToPDF(fileName, outDir);
         }
 
         public Dictionary<string, string> ConvertToPDF(List<string> files, string outDir, bool createDir = false)
