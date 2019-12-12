@@ -112,6 +112,7 @@
     <Compile Include="Src\Common\Utils\LogUtils.cs" />
     <Compile Include="Src\Common\Utils\ReflectionUtils.cs" />
     <Compile Include="Src\Common\Utils\Utils.cs" />
+    <Compile Include="Src\DocHandlers\IDocHandlerFactory.cs" />
     <Compile Include="Src\DocHandlers\OutlookHandler.cs" />
     <Compile Include="Src\DocHandlers\ExcelHandler.cs" />
     <Compile Include="Src\DocHandlers\IDocHandler.cs" />
