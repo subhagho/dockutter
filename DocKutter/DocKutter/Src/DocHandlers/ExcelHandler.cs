@@ -9,6 +9,7 @@ namespace DocKutter.DocHandlers
 {
     public class ExcelHandler : IDocHandler
     {
+        private IDocHandlerFactory docHandlerFactory = null;
         private Application excel = null;
 
         public void Close()
@@ -82,6 +83,11 @@ namespace DocKutter.DocHandlers
                 excel = new Application();
                 excel.Visible = false;
             }
+        }
+
+        public void WithDocHandlerFactory(IDocHandlerFactory factory)
+        {
+            docHandlerFactory = factory;
         }
     }
 }

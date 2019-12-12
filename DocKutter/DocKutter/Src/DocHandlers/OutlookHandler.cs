@@ -9,10 +9,13 @@ namespace DocKutter.DocHandlers
 {
     public class OutlooklHandler : IDocHandler
     {
-        private WordHandler wordHandler = new WordHandler();
+        private Application outlook = null;
+        private IDocHandlerFactory docHandlerFactory = null;
 
         public string ConvertToPDF(string fileName, string outDir, bool createDir = false)
         {
+            Preconditions.CheckArgument(outlook);
+            Preconditions.CheckArgument(docHandlerFactory);
             Preconditions.CheckArgument(fileName);
             try
             {
@@ -28,28 +31,22 @@ namespace DocKutter.DocHandlers
                         throw new DirectoryNotFoundException(String.Format("Output directory not found/be created. [path={0}]", outDir));
                     }
                 }
-                Application outlook = new Application();
-                try
-                {
 
-                    string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
-                    string ext = Path.GetExtension(inFile.FullName);
-                    string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
-                    LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
-                    if (ext.ToLower().CompareTo("msg") == 0)
-                    {
-                        convertMsg(outlook, inFile.FullName, outpath);
-                    }
-                    else
-                    {
-                        convertEml(outlook, inFile.FullName, outpath);
-                    }
-                    return outpath;
-                }
-                finally
+
+                string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
+                string ext = Path.GetExtension(inFile.FullName);
+                string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
+                LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
+                if (ext.ToLower().CompareTo("msg") == 0)
                 {
-                    outlook.Quit();
+                    convertMsg(outlook, inFile.FullName, outpath);
                 }
+                else
+                {
+                    convertEml(outlook, inFile.FullName, outpath);
+                }
+                return outpath;
+
             }
             catch (System.Exception ex)
             {
@@ -78,6 +75,28 @@ namespace DocKutter.DocHandlers
                 result.Add(file, output);
             }
             return result;
+        }
+
+        public void Init()
+        {
+            if (outlook == null)
+            {
+                outlook = new Application();
+            }
+        }
+
+        public void Close()
+        {
+            if (outlook != null)
+            {
+                outlook.Quit();
+                outlook = null;
+            }
+        }
+
+        public void WithDocHandlerFactory(IDocHandlerFactory factory)
+        {
+            docHandlerFactory = factory;
         }
     }
 }

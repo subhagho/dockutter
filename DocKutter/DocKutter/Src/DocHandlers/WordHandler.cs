@@ -9,6 +9,7 @@ namespace DocKutter.DocHandlers
 {
     public class WordHandler : IDocHandler
     {
+        private IDocHandlerFactory docHandlerFactory = null;
         private Application word = null;
 
         public void Close()
@@ -80,6 +81,12 @@ namespace DocKutter.DocHandlers
                 word = new Application();
                 word.Visible = false;
             }
+        }
+
+
+        public void WithDocHandlerFactory(IDocHandlerFactory factory)
+        {
+            docHandlerFactory = factory;
         }
     }
 }

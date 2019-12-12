@@ -9,6 +9,7 @@ namespace DocKutter.DocHandlers
 {
     public class PowerPointHandler : IDocHandler
     {
+        private IDocHandlerFactory docHandlerFactory = null;
         private Application power = null;
 
         public void Close()
@@ -79,6 +80,11 @@ namespace DocKutter.DocHandlers
             {
                 power = new Application();
             }
+        }
+
+        public void WithDocHandlerFactory(IDocHandlerFactory factory)
+        {
+            docHandlerFactory = factory;
         }
     }
 }
