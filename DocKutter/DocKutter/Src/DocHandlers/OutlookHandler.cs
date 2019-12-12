@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Office.Interop.Outlook;
 using DocKutter.Common;
 using DocKutter.Common.Utils;
+using DocKutter.Executor;
 
 namespace DocKutter.DocHandlers
 {
@@ -19,34 +20,38 @@ namespace DocKutter.DocHandlers
             Preconditions.CheckArgument(fileName);
             try
             {
-                FileInfo inFile = new FileInfo(fileName);
-                if (!inFile.Exists)
+                lock (outlook)
                 {
-                    throw new FileNotFoundException("Input Excel file not found.", fileName);
-                }
-                if (createDir)
-                {
-                    if (!FileUtils.CheckDirectory(outDir))
+                    FileInfo inFile = new FileInfo(fileName);
+                    if (!inFile.Exists)
                     {
-                        throw new DirectoryNotFoundException(String.Format("Output directory not found/be created. [path={0}]", outDir));
+                        throw new FileNotFoundException("Input Excel file not found.", fileName);
                     }
-                }
+                    if (createDir)
+                    {
+                        if (!FileUtils.CheckDirectory(outDir))
+                        {
+                            throw new DirectoryNotFoundException(String.Format("Output directory not found/be created. [path={0}]", outDir));
+                        }
+                    }
 
 
-                string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
-                string ext = Path.GetExtension(inFile.FullName);
-                string outpath = String.Format("{0}/{1}.PDF", outDir, fname);
-                LogUtils.Debug(String.Format("Generating PDF output. [path={0}]", outpath));
-                if (ext.ToLower().CompareTo("msg") == 0)
-                {
-                    convertMsg(outlook, inFile.FullName, outpath);
-                }
-                else
-                {
-                    convertEml(outlook, inFile.FullName, outpath);
-                }
-                return outpath;
+                    string fname = Path.GetFileNameWithoutExtension(inFile.FullName);
+                    string ext = Path.GetExtension(inFile.FullName);
+                    string outpath = String.Format("{0}/{1}.html", FileUtils.GetTempDirectory(), fname);
 
+                    if (ext.ToLower().CompareTo("msg") == 0)
+                    {
+                        outpath = convertMsg(outlook, inFile.FullName, outpath, outDir);
+                        LogUtils.Debug(String.Format("Generated PDF output. [path={0}]", outpath));
+                    }
+                    else
+                    {
+                        outpath = convertMsg(outlook, inFile.FullName, outpath, outDir);
+                        LogUtils.Debug(String.Format("Generated PDF output. [path={0}]", outpath));
+                    }
+                    return outpath;
+                }
             }
             catch (System.Exception ex)
             {
@@ -55,19 +60,24 @@ namespace DocKutter.DocHandlers
             }
         }
 
-        private void convertMsg(Application outlook, string fileName, string outfile)
+        private string convertMsg(Application outlook, string fileName, string htmlFile, string outDir)
         {
             MailItem mailItem = (MailItem)outlook.CreateItemFromTemplate(fileName);
-            mailItem.SaveAs(outfile, OlSaveAsType.olHTML);
-        }
+            mailItem.SaveAs(htmlFile, OlSaveAsType.olHTML);
 
-        private void convertEml(Application outlook, string fileName, string outfile)
-        {
-
+            HtmlDocHandler htmlDocHandler = (HtmlDocHandler)docHandlerFactory.GetDocHandler(DocConstants.DOC_HANDLER_HTML);
+            if (htmlDocHandler == null)
+            {
+                throw new System.Exception("HTML Doc Handler not found.");
+            }
+            return htmlDocHandler.ConvertToPDF(htmlFile, outDir);
         }
 
         public Dictionary<string, string> ConvertToPDF(List<string> files, string outDir, bool createDir = false)
         {
+            Preconditions.CheckArgument(files);
+            Preconditions.CheckArgument(outDir);
+
             Dictionary<string, string> result = new Dictionary<string, string>();
             foreach (string file in files)
             {

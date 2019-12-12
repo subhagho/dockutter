@@ -25,16 +25,17 @@ namespace DocKutter.DocHandlers
                 LogUtils.Debug(String.Format("Current Directory: {0}", Directory.GetCurrentDirectory()));
                 string outDir = FileUtils.GetTempDirectory(OUTPUT_DIR_NAME);
 
-                DocRequestHandler handler = new DocRequestHandler();
-                handler.Init();
-                List<ManualResetEvent> events = new List<ManualResetEvent>();
+                using (DocRequestHandler handler = new DocRequestHandler())
+                {
+                    handler.Init();
+                    List<ManualResetEvent> events = new List<ManualResetEvent>();
 
-                DocResponseHandler responseHandler = ResponseCallback;
-                events.Add(handler.Run(DocRequestHandler.DOC_HANDLER_WORD, SOURCE_FILE, outDir, responseHandler));
-                // events.Add(handler.Run(DocRequestHandler.DOC_HANDLER_WORD, SOURCE_FILE_HTML, outDir, responseHandler));
-                events.Add(handler.Run(DocRequestHandler.DOC_HANDLER_WORD, SOURCE_FILE_TEMPLATE_1, outDir, responseHandler));
+                    DocResponseHandler responseHandler = ResponseCallback;
+                    events.Add(handler.Run(DocConstants.DOC_HANDLER_WORD, SOURCE_FILE, outDir, responseHandler));
+                    events.Add(handler.Run(DocConstants.DOC_HANDLER_WORD, SOURCE_FILE_TEMPLATE_1, outDir, responseHandler));
 
-                WaitHandle.WaitAll(events.ToArray());
+                    WaitHandle.WaitAll(events.ToArray());
+                }
             }
             catch (Exception ex)
             {

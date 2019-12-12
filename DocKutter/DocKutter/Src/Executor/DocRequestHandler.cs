@@ -27,13 +27,9 @@ namespace DocKutter.Executor
 
     public delegate void DocResponseHandler(ProcessResponse response);
 
-    public class DocRequestHandler : IDocHandlerFactory
+    public class DocRequestHandler : IDocHandlerFactory, IDisposable
     {
-        public const string DOC_HANDLER_WORD = "WORD";
-        public const string DOC_HANDLER_EXCEL = "EXCEL";
-        public const string DOC_HANDLER_POWERPOINT = "POWERPOINT";
-        public const string DOC_HANDLER_EMAIL = "EMAIL";
-
+        
         private Dictionary<string, IDocHandler> handlers;
 
         public IDocHandler GetDocHandler(string name)
@@ -45,7 +41,7 @@ namespace DocKutter.Executor
             return null;
         }
 
-        public void Close()
+        public void Dispose()
         {
             if (handlers != null && handlers.Count > 0)
             {
@@ -61,21 +57,25 @@ namespace DocKutter.Executor
         {
             handlers = new Dictionary<string, IDocHandler>();
 
-            handlers[DOC_HANDLER_EMAIL] = new OutlooklHandler();
-            handlers[DOC_HANDLER_EMAIL].Init();
-            handlers[DOC_HANDLER_EMAIL].WithDocHandlerFactory(this);
+            handlers[DocConstants.DOC_HANDLER_EMAIL] = new OutlooklHandler();
+            handlers[DocConstants.DOC_HANDLER_EMAIL].Init();
+            handlers[DocConstants.DOC_HANDLER_EMAIL].WithDocHandlerFactory(this);
 
-            handlers[DOC_HANDLER_EXCEL] = new ExcelHandler();
-            handlers[DOC_HANDLER_EXCEL].Init();
-            handlers[DOC_HANDLER_EXCEL].WithDocHandlerFactory(this);
+            handlers[DocConstants.DOC_HANDLER_EXCEL] = new ExcelHandler();
+            handlers[DocConstants.DOC_HANDLER_EXCEL].Init();
+            handlers[DocConstants.DOC_HANDLER_EXCEL].WithDocHandlerFactory(this);
 
-            handlers[DOC_HANDLER_POWERPOINT] = new PowerPointHandler();
-            handlers[DOC_HANDLER_POWERPOINT].Init();
-            handlers[DOC_HANDLER_POWERPOINT].WithDocHandlerFactory(this);
+            handlers[DocConstants.DOC_HANDLER_POWERPOINT] = new PowerPointHandler();
+            handlers[DocConstants.DOC_HANDLER_POWERPOINT].Init();
+            handlers[DocConstants.DOC_HANDLER_POWERPOINT].WithDocHandlerFactory(this);
 
-            handlers[DOC_HANDLER_WORD] = new WordHandler();
-            handlers[DOC_HANDLER_WORD].Init();
-            handlers[DOC_HANDLER_WORD].WithDocHandlerFactory(this);
+            handlers[DocConstants.DOC_HANDLER_WORD] = new WordHandler();
+            handlers[DocConstants.DOC_HANDLER_WORD].Init();
+            handlers[DocConstants.DOC_HANDLER_WORD].WithDocHandlerFactory(this);
+
+            handlers[DocConstants.DOC_HANDLER_HTML] = new HtmlDocHandler();
+            handlers[DocConstants.DOC_HANDLER_HTML].Init();
+            handlers[DocConstants.DOC_HANDLER_HTML].WithDocHandlerFactory(this);
         }
 
         public ManualResetEvent Run(string type, string sourceDoc, string outDir, DocResponseHandler callback)
