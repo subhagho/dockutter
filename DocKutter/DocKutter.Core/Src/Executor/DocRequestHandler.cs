@@ -57,7 +57,7 @@ namespace DocKutter.Executor
         {
             handlers = new Dictionary<string, IDocHandler>();
 
-            handlers[DocConstants.DOC_HANDLER_EMAIL] = new EMailHandler();
+            handlers[DocConstants.DOC_HANDLER_EMAIL] = new OutlooklHandler();
             handlers[DocConstants.DOC_HANDLER_EMAIL].Init();
             handlers[DocConstants.DOC_HANDLER_EMAIL].WithDocHandlerFactory(this);
 

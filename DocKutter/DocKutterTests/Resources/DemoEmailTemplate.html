@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <p>
+            ${<b>From:</b>::FROM}
+        </p>
+        <p>
+            ${<b>To:</b>::TO}
+        </p>
+        <p>
+            ${<b>Cc:</b>::CC}
+        </p>
+        <p>
+            ${<b>Bcc:</b>::BCC}
+        </p>
+        <br />
+        <p>
+            ${<b>Sent:</b>::SENT}
+        </p>
+        <p>
+            ${<b>Received:</b>::RECEIVED}
+        </p>
+        <br />
+        <p>
+            ${<b>Subject:</b>::SUBJECT}
+        </p>
+        <div>
+            <p>
+                ${ ::BODY}
+            </p>
+            <br />
+        </div>
+    </div>
+</body>
+</html>
