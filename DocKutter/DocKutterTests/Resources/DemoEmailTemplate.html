@@ -6,36 +6,36 @@
     <title></title>
 </head>
 <body>
-    <div>
+    <div id="__EMAIL_HEADER">
         <p>
-            ${<b>From:</b>::FROM}
+            ${<b>From:</b>::__FROM}
         </p>
         <p>
-            ${<b>To:</b>::TO}
+            ${<b>To:</b>::__TO}
         </p>
         <p>
-            ${<b>Cc:</b>::CC}
+            ${<b>Cc:</b>::__CC}
         </p>
         <p>
-            ${<b>Bcc:</b>::BCC}
-        </p>
-        <br />
-        <p>
-            ${<b>Sent:</b>::SENT}
-        </p>
-        <p>
-            ${<b>Received:</b>::RECEIVED}
+            ${<b>Bcc:</b>::__BCC}
         </p>
         <br />
         <p>
-            ${<b>Subject:</b>::SUBJECT}
+            ${<b>Sent:</b>::__SENT}
         </p>
-        <div>
-            <p>
-                ${ ::BODY}
-            </p>
-            <br />
-        </div>
+        <p>
+            ${<b>Received:</b>::__RECEIVED}
+        </p>
+        <br />
+        <p>
+            ${<b>Subject:</b>::__SUBJECT}
+        </p>
+    </div>
+    <div id="__EMAIL_BODY">
+        <p>
+            ${ ::__BODY}
+        </p>
+        <br />
     </div>
 </body>
 </html>

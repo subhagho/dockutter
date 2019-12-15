@@ -75,12 +75,9 @@ namespace DocKutter.DocHandlers
 
         private string convertEml(string fileName, string outDir)
         {
-            WordHandler wordDocHandler = (WordHandler)docHandlerFactory.GetDocHandler(DocConstants.DOC_HANDLER_WORD);
-            if (wordDocHandler == null)
-            {
-                throw new System.Exception("Word Doc Handler not found.");
-            }
-            return wordDocHandler.ConvertToPDF(fileName, outDir);
+            EmailReader reader = new EmailReader().WithHtmlMessageTemplate("");
+
+            return null;
         }
 
         public Dictionary<string, string> ConvertToPDF(List<string> files, string outDir, bool createDir = false)

@@ -7,20 +7,22 @@ using System.Threading.Tasks;
 using MsgReader;
 using DocKutter.Common.Utils;
 using System.Globalization;
+using HtmlAgilityPack;
 
 namespace DocKutter.Common
 {
     public class EmailReader
     {
-        public static readonly string FIELD_REGEX = @"\$\{([A-Za-z,;:'\s<>=@&/]+)::(\w+)\}";
-        public static readonly string FIELD_FROM = "FROM";
-        public static readonly string FIELD_TO = "TO";
-        public static readonly string FIELD_CC = "CC";
-        public static readonly string FIELD_BCC = "BCC";
-        public static readonly string FIELD_SUBJECT = "SUBJECT";
-        public static readonly string FIELD_RECEIVED = "RECEIVED";
-        public static readonly string FIELD_SENT = "SENT";
-        public static readonly string FIELD_BODY = "BODY";
+        public static readonly string FIELD_REGEX = @"\$\{([A-Za-z,;:'\s<>=@&/]+)::\s*(__\w+)\s*\}";
+        public static readonly string FIELD_FROM = "__FROM";
+        public static readonly string FIELD_TO = "__TO";
+        public static readonly string FIELD_CC = "__CC";
+        public static readonly string FIELD_BCC = "__BCC";
+        public static readonly string FIELD_SUBJECT = "__SUBJECT";
+        public static readonly string FIELD_RECEIVED = "__RECEIVED";
+        public static readonly string FIELD_SENT = "__SENT";
+        public static readonly string FIELD_BODY = "__BODY";
+        public static readonly string NODE_HEADER = "__EMAIL_HEADER";
 
         private string htmlMessageTemplate = null;
         private string dateFormat = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
@@ -73,6 +75,7 @@ namespace DocKutter.Common
                 if (matches != null && matches.Count > 0)
                 {
                     string html = new string(htmlMessageTemplate.ToCharArray());
+                    string htmlBody = null;
                     foreach (Match match in matches)
                     {
                         string k = match.Groups[1].Value;
@@ -112,7 +115,8 @@ namespace DocKutter.Common
                         {
                             if (message.BodyHtml != null)
                             {
-                                t = message.BodyHtml;
+                                htmlBody = message.BodyHtml;
+                                continue;
                             }
                             else
                             {
@@ -126,7 +130,7 @@ namespace DocKutter.Common
                             html = ReplaceMatch(html, match, t);
                         }
                     }
-                    return PostProcess(html);
+                    return PostProcess(html, htmlBody);
                 }
             }
             else
@@ -136,6 +140,7 @@ namespace DocKutter.Common
                 if (matches != null && matches.Count > 0)
                 {
                     string html = new string(htmlMessageTemplate.ToCharArray());
+                    string htmlBody = null;
                     foreach (Match match in matches)
                     {
                         string k = match.Groups[1].Value;
@@ -176,7 +181,8 @@ namespace DocKutter.Common
                         {
                             if (message.HtmlBody != null)
                             {
-                                t = message.HtmlBody.GetBodyAsText();
+                                htmlBody = message.HtmlBody.GetBodyAsText();
+                                continue;
                             }
                             else
                             {
@@ -190,15 +196,39 @@ namespace DocKutter.Common
                             html = ReplaceMatch(html, match, t);
                         }
                     }
-                    return PostProcess(html);
+                    return PostProcess(html, htmlBody);
                 }
             }
             return null;
         }
 
-        private string PostProcess(string html)
+        private string PostProcess(string html, string htmlBody)
         {
-            return Regex.Replace(html, FIELD_REGEX, "");
+            html = Regex.Replace(html, FIELD_REGEX, "");
+            if (!String.IsNullOrEmpty(htmlBody))
+            {
+                HtmlDocument body = new HtmlDocument();
+                body.LoadHtml(htmlBody);
+
+                HtmlDocument header = new HtmlDocument();
+                header.LoadHtml(html);
+
+                var hnode = header.GetElementbyId(NODE_HEADER);
+                if (hnode == null)
+                {
+                    throw new NodeNotFoundException(String.Format("Header node not found. [id={0}]", NODE_HEADER));
+                }
+                var bnode = body.DocumentNode.SelectSingleNode("//body");
+                if (bnode == null)
+                {
+                    throw new NodeNotFoundException(string.Format("Body node not found. [name={0}]", "body"));
+                }
+                var nhnode = hnode.CloneNode(true);
+                bnode.InsertBefore(nhnode, bnode.ChildNodes[0]);
+
+                return body.DocumentNode.InnerHtml;
+            }
+            return html;
         }
 
         private string GetRecepientsString(List<MsgReader.Mime.Header.RfcMailAddress> addresses)
@@ -217,10 +247,10 @@ namespace DocKutter.Common
 
         private string EmailAddressString(MsgReader.Mime.Header.RfcMailAddress address, bool href = true)
         {
-            string str = String.Format("{0} <{1}>", address.DisplayName, address.Address);
+            string str = String.Format("{0}, {1}", address.DisplayName, address.Address);
             if (href)
             {
-                str = String.Format("<a href='mailto:{0}>{1}</a>", address.Address, str);
+                str = String.Format("<a href='mailto:{0}'>{1}</a>", address.Address, str);
             }
             return str;
         }
