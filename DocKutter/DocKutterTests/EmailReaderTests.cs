@@ -43,6 +43,8 @@ namespace DocKutter.Common
         {
             try
             {
+                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
                 EmailReader reader = new EmailReader().WithHtmlMessageTemplate(EMAIL_TEMPLATE_FILE).WithDateFormat("ddd, dd MMM yyy HH:mm:ss GMT");
                 string html = reader.Read(EMAIL_FILE_MSG);
                 Assert.True(!String.IsNullOrEmpty(html));

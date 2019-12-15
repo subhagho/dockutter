@@ -120,12 +120,13 @@ namespace DocKutter.Common
                             }
                         }
 
-                        t = String.Format("{0}{1}", k, t);
-
                         if (!String.IsNullOrEmpty(t))
+                        {
+                            t = String.Format("{0}{1}", k, t);
                             html = ReplaceMatch(html, match, t);
+                        }
                     }
-                    return html;
+                    return PostProcess(html);
                 }
             }
             else
@@ -183,15 +184,21 @@ namespace DocKutter.Common
                             }
                         }
 
-                        t = String.Format("{0}{1}", k, t);
-
                         if (!String.IsNullOrEmpty(t))
+                        {
+                            t = String.Format("{0}{1}", k, t);
                             html = ReplaceMatch(html, match, t);
+                        }
                     }
-                    return html;
+                    return PostProcess(html);
                 }
             }
             return null;
+        }
+
+        private string PostProcess(string html)
+        {
+            return Regex.Replace(html, FIELD_REGEX, "");
         }
 
         private string GetRecepientsString(List<MsgReader.Mime.Header.RfcMailAddress> addresses)
